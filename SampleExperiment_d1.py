@@ -24,7 +24,9 @@ newParamsFilename = 'SampleExperimentParams.psydat'
 params = {
 # Declare stimulus and response parameters
     'nTrials': 4,            # number of trials in this session
-    'stimDur': 1,             # time when stimulus is presented (in seconds)
+    'stimDur': .25,             # time when stimulus is presented (in seconds)
+    'preStimDur': 1,          # time when pre stimulus fixation cross is presented (in seconds)
+    'postStimDur': 1,          # time when post stimulus fixation cross is presented (in seconds)
     'ISI': 2,                 # time between when one stimulus disappears and the next appears (in seconds)
     'tStartup': 2,            # pause time before starting first stimulus
     'triggerKey': 't',        # key from scanner that says scan is starting
@@ -187,12 +189,17 @@ def ShowImage(imageName, stimDur=float('Inf')):
     # display info to experimenter
     print('Showing Stimulus %s'%imageName) 
     
+    # Display fixation cross for preStimDur time
+    AddToFlipTime(params['preStimDur']) # add to tNextFlip[0]
+    # Wait until it's time to display
+    while (globalClock.getTime()<tNextFlip[0]):
+         fixation.draw() # draw it
+         win.logOnFlip(level=logging.EXP, msg='Display Fixation')
+         win.flip()
+         
     # Draw image
     stimImage.setImage(imageName)
     stimImage.draw()
-    # Wait until it's time to display
-    while (globalClock.getTime()<tNextFlip[0]):
-        pass
     # log & flip window to display image
     win.logOnFlip(level=logging.EXP, msg='Display %s'%imageName)
     win.flip()
@@ -221,9 +228,16 @@ def ShowImage(imageName, stimDur=float('Inf')):
     tStim = globalClock.getTime()-tStimStart
     print('Stim %s: %.3f seconds'%(imageName,tStim))
     
-    # Display the fixation cross
-    if params['ISI']>0:# if there should be a fixation cross
+    AddToFlipTime(params['postStimDur']) # add to tNextFlip[0]
+    while (globalClock.getTime()<tNextFlip[0]): # until it's time for the next frame
+        # Display the fixation cross
         fixation.draw() # draw it
+        win.logOnFlip(level=logging.EXP, msg='Display Fixation')
+        win.flip()
+    
+    AddToFlipTime(params['ISI']) # add to tNextFlip[0]
+    while (globalClock.getTime()<tNextFlip[0]): # until it's time for the next frame
+        win.clearBuffer()
         win.logOnFlip(level=logging.EXP, msg='Display Fixation')
         win.flip()
         
@@ -265,9 +279,9 @@ tStartSession = globalClock.getTime()
 AddToFlipTime(tStartSession+params['tStartup'])
 
 # wait before first stimulus
-fixation.draw()
-win.logOnFlip(level=logging.EXP, msg='Display Fixation')
-win.flip()
+#fixation.draw()
+#win.logOnFlip(level=logging.EXP, msg='Display Fixation')
+#win.flip()
 
 
 # =========================== #
@@ -285,9 +299,6 @@ rtVec[:]=np.nan
 for iStim in range(0,params['nTrials']):
     # display text
     [respKey,tStimStart] = ShowImage(imageName=allImages[iStim],stimDur=params['stimDur'])
-    if iStim < params['nTrials']:
-        # pause
-        AddToFlipTime(params['ISI'])
     # save stimulus time
     tStimVec[iStim] = tStimStart
     if respKey is not None and respKey[0] in params['respKeys']:
