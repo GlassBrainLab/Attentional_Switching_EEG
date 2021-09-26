@@ -23,7 +23,7 @@ newParamsFilename = 'SampleExperimentParams.psydat'
 # Declare primary task parameters.
 params = {
 # Declare stimulus and response parameters
-    'nTrials': 4 # change to 107 for 8 minute long session,            # number of trials in this session
+    'nTrials': 3 # change to 107 for 8 minute long session,            # number of trials in this session
     'stimDur': .25,             # time when stimulus is presented (in seconds)
     'preStimDur': np.arange(0.5,2,0.1),          # time when pre stimulus fixation cross is presented (in seconds)
     'postStimDur': 1,          # time when post stimulus fixation cross is presented (in seconds)
