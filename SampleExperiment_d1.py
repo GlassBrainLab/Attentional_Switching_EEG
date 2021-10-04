@@ -33,11 +33,10 @@ params = {
     'respKeys': ['r','b','y','g'],           # keys to be used for responses (mapped to 1,2,3,4)
     'respAdvances': True,     # will a response end the stimulus?
     'choices': [1, 2, 3],      # Drop down menu options to specify condition, which determines which folder to pull images from
-    'imageDir': 'Faces/neutral/',         # Initialize variable for image directory (default = neutral)
     'imageDir_neutral': 'Faces/neutral/',    # directory containing neutral image stimluli
     'imageDir_social': 'Faces/social/',      # directory containing social image stimluli
     'imageDir_threat': 'Faces/threat/',      # directory containing threat image stimluli
-    'imageSuffix': '.jpg',   # images will be selected randomly (without replacement) from all files in imageDir that end in imageSuffix.
+    'imageSuffix': '.png',   # images will be selected randomly (without replacement) from all files in imageDir that end in imageSuffix.
 # declare prompt and question files
     'skipPrompts': False,     # go right to the scanner-wait page
     'promptDir': 'Text/',  # directory containing prompts and questions files
@@ -172,11 +171,11 @@ message1 = visual.TextStim(win, pos=[0,+.5], wrapWidth=1.5, color='#000000', ali
 message2 = visual.TextStim(win, pos=[0,-.5], wrapWidth=1.5, color='#000000', alignHoriz='center', name='bottomMsg', text="bbb",units='norm')
 
 # get stimulus files
-allImages = glob.glob(params['imageDir']+"*"+params['imageSuffix']) # get all files in <imageDir> that end in .<imageSuffix>.
-print('%d images loaded from %s'%(len(allImages),params['imageDir']))
+allImages = glob.glob(imageDir+"*"+params['imageSuffix']) # get all files in <imageDir> that end in .<imageSuffix>.
+print('%d images loaded from %s'%(len(allImages),imageDir))
 # make sure there are enough images
 if len(allImages)<params['nTrials']:
-    raise ValueError("# images found in '%s' (%d) is less than # trials (%d)!"%(params['imageDir'],len(allImages),params['nTrials']))
+    raise ValueError("# images found in '%s' (%d) is less than # trials (%d)!"%(imageDir,len(allImages),params['nTrials']))
 # randomize order
 random.shuffle(allImages) 
 
