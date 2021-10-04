@@ -23,7 +23,7 @@ newParamsFilename = 'SampleExperimentParams.psydat'
 # Declare primary task parameters.
 params = {
 # Declare stimulus and response parameters
-    'nTrials': 3 # change to 107 for 8 minute long session,            # number of trials in this session
+    'nTrials': 3, # change to 107 for 8 minute long session,            # number of trials in this session
     'stimDur': .25,             # time when stimulus is presented (in seconds)
     'preStimDur': np.arange(0.5,2,0.1),          # time when pre stimulus fixation cross is presented (in seconds)
     'postStimDur': 1,          # time when post stimulus fixation cross is presented (in seconds)
@@ -32,7 +32,11 @@ params = {
     'triggerKey': 't',        # key from scanner that says scan is starting
     'respKeys': ['r','b','y','g'],           # keys to be used for responses (mapped to 1,2,3,4)
     'respAdvances': True,     # will a response end the stimulus?
-    'imageDir': 'Faces/',    # directory containing image stimluli
+    'choices': [1, 2, 3],      # Drop down menu options to specify condition, which determines which folder to pull images from
+    'imageDir': 'Faces/neutral/',         # Initialize variable for image directory (default = neutral)
+    'imageDir_neutral': 'Faces/neutral/',    # directory containing neutral image stimluli
+    'imageDir_social': 'Faces/social/',      # directory containing social image stimluli
+    'imageDir_threat': 'Faces/threat/',      # directory containing threat image stimluli
     'imageSuffix': '.jpg',   # images will be selected randomly (without replacement) from all files in imageDir that end in imageSuffix.
 # declare prompt and question files
     'skipPrompts': False,     # go right to the scanner-wait page
@@ -46,6 +50,17 @@ params = {
     'screenColor':(128,128,128) # in rgb255 space: (r,g,b) all between 0 and 255
 }
 
+# Get condition input (neutral, social, threat)
+dlg = gui.Dlg() # create GUI
+dlg.addField('Condition: ', choices=params['choices']) # Create condition drop down menu- can be 1, 2 or 3
+dlg.show() # Display GUI
+if dlg.data[0] == 1:
+    imageDir = params['imageDir_neutral']
+elif dlg.data[0] == 2:
+    imageDir = params['imageDir_social']
+else:
+    imageDir = params['imageDir_threat']
+    
 # save parameters
 if saveParams:
     dlgResult = gui.fileSaveDlg(prompt='Save Params...',initFilePath = os.getcwd() + '/Params', initFileName = newParamsFilename,
