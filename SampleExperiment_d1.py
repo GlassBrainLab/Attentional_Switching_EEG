@@ -12,6 +12,7 @@ import os, glob # for monitor size detection, files
 import time as ts, numpy as np # for timing and array operations
 import BasicPromptTools # for loading/presenting prompts and questions
 import random # for randomization of trials
+import pandas as pd # for reading instruction csv files
 
 # ====================== #
 # ===== PARAMETERS ===== #
@@ -24,10 +25,10 @@ newParamsFilename = 'SampleExperimentParams.psydat'
 params = {
 # Declare stimulus and response parameters
     'nTrials': 3, # change to 107 for 8 minute long session,            # number of trials in this session
-    'stimDur': .25,             # time when stimulus is presented (in seconds)
+    'stimDur': .5,             # time when stimulus is presented (in seconds)
     'preStimDur': np.arange(0.5,2,0.1),          # time when pre stimulus fixation cross is presented (in seconds)
-    'postStimDur': 1,          # time when post stimulus fixation cross is presented (in seconds)
-    'ISI': 2,                 # time between when one stimulus disappears and the next appears (in seconds)
+    'postStimDur': 1.0,          # time when post stimulus fixation cross is presented (in seconds)
+    'ISI': 1.75,                 # time between when one cross disappears and the next appears (in seconds)
     'tStartup': 1,            # pause time before starting first stimulus
     'triggerKey': 't',        # key from scanner that says scan is starting
     'respKeys': ['r','b','y','g'],           # keys to be used for responses (mapped to 1,2,3,4)
@@ -40,7 +41,9 @@ params = {
 # declare prompt and question files
     'skipPrompts': False,     # go right to the scanner-wait page
     'promptDir': 'Text/',  # directory containing prompts and questions files
-    'promptFile': 'SamplePrompts.txt', # Name of text file containing prompts 
+    'promptFile_neutral': 'NeutralPrompts.csv', # Name of text file containing neutral prompts 
+    'promptFile_social': 'SocialPrompts.csv', # Name of text file containing social prompts 
+    'promptFile_threat': 'ThreatPrompts.csv', # Name of text file containing threat prompts 
 # declare display parameters
     'fullScreen': True,       # run in full screen mode?
     'screenToShow': 0,        # display on primary screen (0) or secondary (1)?
@@ -50,15 +53,15 @@ params = {
 }
 
 # Get condition input (neutral, social, threat)
-dlg = gui.Dlg() # create GUI
-dlg.addField('Condition: ', choices=params['choices']) # Create condition drop down menu- can be 1, 2 or 3
-dlg.show() # Display GUI
-if dlg.data[0] == 1:
-    imageDir = params['imageDir_neutral']
-elif dlg.data[0] == 2:
-    imageDir = params['imageDir_social']
-else:
-    imageDir = params['imageDir_threat']
+#dlg = gui.Dlg() # create GUI
+#dlg.addField('Condition: ', choices=params['choices']) # Create condition drop down menu- can be 1, 2 or 3
+#dlg.show() # Display GUI
+#if dlg.data[0] == 1:
+#    imageDir = params['imageDir_neutral']
+#elif dlg.data[0] == 2:
+#    imageDir = params['imageDir_social']
+#else:
+#    imageDir = params['imageDir_threat']
     
 # save parameters
 if saveParams:
@@ -79,18 +82,20 @@ try: # try to get a previous parameters file
     expInfo = fromFile('%s-lastExpInfo.psydat'%scriptName)
     expInfo['session'] +=1 # automatically increment session number
     expInfo['paramsFile'] = [expInfo['paramsFile'],'Load...']
+    expInfo['condition'] = params['choices']
 except: # if not there then use a default set
     expInfo = {
         'subject':'1', 
         'session': 1, 
         'skipPrompts':False, 
-        'paramsFile':['DEFAULT','Load...']}
+        'paramsFile':['DEFAULT','Load...'],
+        'condition': params['choices']}
 # overwrite params struct if you just saved a new parameter set
 if saveParams:
     expInfo['paramsFile'] = [newParamsFilename,'Load...']
 
 #present a dialogue to change select params
-dlg = gui.DlgFromDict(expInfo, title=scriptName, order=['subject','session','skipPrompts','paramsFile'])
+dlg = gui.DlgFromDict(expInfo, title=scriptName, order=['subject','session','skipPrompts','paramsFile','condition'])
 if not dlg.OK:
     core.quit() # the user hit cancel, so exit
 
@@ -104,6 +109,16 @@ if expInfo['paramsFile'] not in ['DEFAULT', None]: # otherwise, just use default
     # load params file
     params = fromFile(expInfo['paramsFile'])
 
+# Define image directory based on condition
+if expInfo['condition'] == '1':
+    imageDir = params['imageDir_neutral']
+    promptFile = params['promptFile_neutral']
+elif expInfo['condition']  == '2':
+    imageDir = params['imageDir_social']
+    promptFile = params['promptFile_social']
+else:
+    imageDir = params['imageDir_threat']
+    promptFile = params['promptFile_threat']
 
 # transfer skipPrompts from expInfo (gui input) to params (logged parameters)
 params['skipPrompts'] = expInfo['skipPrompts']
@@ -184,8 +199,9 @@ imageName = allImages[0] # initialize with first image
 stimImage = visual.ImageStim(win, pos=[0,0], name='ImageStimulus',image=imageName, units='height')
 
 # read questions and answers from text files
-[topPrompts,bottomPrompts] = BasicPromptTools.ParsePromptFile(params['promptDir']+params['promptFile'])
-print('%d prompts loaded from %s'%(len(topPrompts),params['promptFile']))
+#[topPrompts,bottomPrompts] = BasicPromptTools.ParsePromptFile(params['promptDir']+params['promptFile'])
+df_prompts = pd.read_csv(params['promptDir'] + promptFile)
+print('%d prompts loaded from %s'%(len(df_prompts['topPrompts']),promptFile))
 
 # ============================ #
 # ======= SUBFUNCTIONS ======= #
@@ -198,6 +214,38 @@ def AddToFlipTime(tIncrement=1.0):
 # flip window as soon as possible
 def SetFlipTimeToNow():
     tNextFlip[0] = globalClock.getTime()
+
+
+# Display prompts and let the subject page through them one by one.
+# topPrompts, bottomPrompts, and middleImages must be lists of equal length.
+def RunPrompts(topPrompts,bottomPrompts,middleImages,backKey='backspace',backPrompt=0,name='Instructions',ignoreKeys=[]):
+    iPrompt = 0
+    redraw = True # redraw a new prompt?
+    while iPrompt < len(topPrompts):
+        if redraw:
+            message1.setText(topPrompts[iPrompt])
+            message2.setText(bottomPrompts[iPrompt])
+            if pd.isna(middleImages[iPrompt]) == False: # if the image name is not NaN change the image
+                stimImage.setImage(middleImages[iPrompt])
+                stimImage.draw() # draw the image
+            #display instructions and wait
+            message1.draw()
+            message2.draw()
+            win.logOnFlip(level=logging.EXP, msg='Display %s%d'%(name,iPrompt+1))
+            win.flip()
+        #check for a keypress
+        thisKey = event.waitKeys()
+        if thisKey[0] in ['q','escape']:
+            core.quit()
+        elif thisKey[0] == backKey:
+            iPrompt = backPrompt
+            redraw = True
+        elif thisKey[0] in ignoreKeys:
+            redraw = False
+            pass # ignore these keys
+        else:
+            iPrompt += 1
+            redraw = True
 
 def ShowImage(imageName, stimDur=float('Inf')):
     # display info to experimenter
@@ -281,7 +329,8 @@ def CoolDown():
 
 # display prompts
 if not params['skipPrompts']:
-    BasicPromptTools.RunPrompts(topPrompts,bottomPrompts,win,message1,message2)
+    #BasicPromptTools.RunPrompts(topPrompts,bottomPrompts,win,message1,message2)
+    RunPrompts(df_prompts['topPrompts'],df_prompts['bottomPrompts'],df_prompts['image'])
 
 # wait for scanner
 message1.setText("Waiting for scanner to start...")
