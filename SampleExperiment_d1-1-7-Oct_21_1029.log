@@ -1,0 +1,56 @@
+5.5999 	WARNING 	We strongly recommend you activate the PTB sound engine in PsychoPy prefs as the preferred audio engine. Its timing is vastly superior. Your prefs are currently set to use ['sounddevice', 'PTB', 'pyo', 'pygame'] (in that order).
+14.9270 	INFO 	---START PARAMETERS---
+14.9270 	INFO 	filename: SampleExperiment_d1-1-7-Oct_21_1029
+14.9270 	INFO 	subject: 1
+14.9270 	INFO 	session: 7
+14.9271 	INFO 	date: Oct_21_1029
+14.9271 	INFO 	ISI: 1.75
+14.9271 	INFO 	choices: [1, 2, 3]
+14.9271 	INFO 	fixCrossPos: [0, 0]
+14.9272 	INFO 	fixCrossSize: 0.1
+14.9272 	INFO 	fullScreen: True
+14.9272 	INFO 	imageDir_neutral: Faces/neutral/
+14.9272 	INFO 	imageDir_social: Faces/social/
+14.9272 	INFO 	imageDir_threat: Faces/threat/
+14.9272 	INFO 	imageSuffix: .png
+14.9273 	INFO 	nTrials: 3
+14.9273 	INFO 	postStimDur: 1.0
+14.9283 	INFO 	preStimDur: [0.5 0.6 0.7 0.8 0.9 1.  1.1 1.2 1.3 1.4 1.5 1.6 1.7 1.8 1.9]
+14.9284 	INFO 	promptDir: Text/
+14.9284 	INFO 	promptFile_neutral: NeutralPrompts.csv
+14.9285 	INFO 	promptFile_social: SocialPrompts.csv
+14.9285 	INFO 	promptFile_threat: ThreatPrompts.csv
+14.9286 	INFO 	respAdvances: True
+14.9286 	INFO 	respKeys: ['r', 'b', 'y', 'g']
+14.9286 	INFO 	screenColor: (128, 128, 128)
+14.9287 	INFO 	screenToShow: 0
+14.9287 	INFO 	skipPrompts: False
+14.9287 	INFO 	stimDur: 0.5
+14.9287 	INFO 	tStartup: 1
+14.9287 	INFO 	triggerKey: t
+14.9287 	INFO 	---END PARAMETERS---
+17.8573 	INFO 	Loaded monitor calibration from ['2021_02_22 10:21']
+17.8650 	WARNING 	User requested fullscreen with size [800 600], but screen is actually [1440, 900]. Using actual size
+18.6153 	EXP 	Created win = Window(allowGUI=False, allowStencil=False, autoLog=True, backendConf=UNKNOWN, bitsMode=UNKNOWN, blendMode='avg', bpc=(8, 8, 8), color=array([128, 128, 128]), colorSpace='rgb255', depthBits=8, fullscr=<method-wrapper '__getattribute__' of attributeSetter object at 0x7fb615507c18>, gamma=None, gammaErrorPolicy='raise', lms=UNKNOWN, monitor=<psychopy.monitors.calibTools.Monitor object at 0x7fb6132955c0>, multiSample=False, name='win', numSamples=2, pos=[0.0, 0.0], screen=0, size=array([1440,  900]), stencilBits=0, stereo=False, units='height', useFBO=False, useRetina=False, viewOri=0.0, viewPos=None, viewScale=None, waitBlanking=True, winType='pyglet')
+18.6157 	EXP 	win: mouseVisible = True
+18.6269 	EXP 	Created fixCross = ShapeStim(__class__=<class 'psychopy.visual.shape.ShapeStim'>, autoDraw=False, autoLog=True, closeShape=False, color=method-wrapper(...), colorSpace='rgb', contrast=None, depth=0, fillColor=array([0, 0, 0]), fillColorSpace='rgb', fillRGB=UNKNOWN, interpolate=True, lineColor=array([-1., -1., -1.]), lineColorSpace='rgb', lineRGB=UNKNOWN, lineWidth=3.0, name='fixCross', opacity=1.0, ori=0.0, pos=array([0., 0.]), size=array([1., 1.]), units='height', vertices=ndarray(...), win=Window(...), windingRule=None)
+18.6277 	WARNING 	TextStim.alignHoriz is deprecated. Use alignText and anchorHoriz attributes instead
+18.7337 	EXP 	Created topMsg = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz='center', alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoLog=True, bold=False, color=array([-1., -1., -1.]), colorSpace='rgb', contrast=1.0, depth=0, flipHoriz=False, flipVert=False, font='', fontFiles=[], height=0.1, italic=False, languageStyle='LTR', name='topMsg', opacity=1.0, ori=0.0, pos=array([0. , 0.5]), rgb=UNKNOWN, text='aaa', units='norm', win=Window(...), wrapWidth=1.5)
+18.7338 	WARNING 	TextStim.alignHoriz is deprecated. Use alignText and anchorHoriz attributes instead
+18.7383 	EXP 	Created bottomMsg = TextStim(__class__=<class 'psychopy.visual.text.TextStim'>, alignHoriz='center', alignText='center', alignVert=method-wrapper(...), anchorHoriz='center', anchorVert='center', antialias=True, autoLog=True, bold=False, color=array([-1., -1., -1.]), colorSpace='rgb', contrast=1.0, depth=0, flipHoriz=False, flipVert=False, font='', fontFiles=[], height=0.1, italic=False, languageStyle='LTR', name='bottomMsg', opacity=1.0, ori=0.0, pos=array([ 0. , -0.5]), rgb=UNKNOWN, text='bbb', units='norm', win=Window(...), wrapWidth=1.5)
+18.8885 	EXP 	Created ImageStimulus = ImageStim(__class__=<class 'psychopy.visual.image.ImageStim'>, autoLog=True, color=array([1., 1., 1.]), colorSpace='rgb', contrast=1.0, depth=0, flipHoriz=False, flipVert=False, image='Faces/social/No Emotion_Front_Man17.png', interpolate=False, mask=None, maskParams=None, name='ImageStimulus', opacity=1, ori=0.0, pos=array([0., 0.]), size=array([0.55555556, 0.55555556]), texRes=128, units='height', win=Window(...))
+18.9414 	EXP 	topMsg: text = 'Count the all the faces you see looking directly at you'
+18.9414 	EXP 	bottomMsg: text = 'Press ENTER to continue'
+18.9414 	EXP 	Display Instructions1
+22.4805 	DATA 	Keypress: return
+22.5508 	EXP 	topMsg: text = 'Here are some examples of faces not looking at you (left) and looking at you (right) '
+22.5508 	EXP 	bottomMsg: text = 'Press ENTER to continue'
+22.5508 	EXP 	ImageStimulus: size = array([1.21888889, 0.54666667])
+22.5508 	EXP 	ImageStimulus: image = 'Faces/sample_images/sample_social.png'
+22.5508 	EXP 	Display Instructions2
+29.0226 	DATA 	Keypress: return
+29.0626 	EXP 	topMsg: text = 'If you have any questions, please ask the experimenter now'
+29.0626 	EXP 	bottomMsg: text = 'WHEN YOU ARE READY TO BEGIN, press any button'
+29.0626 	EXP 	Display Instructions3
+31.5379 	DATA 	Keypress: escape
+32.0789 	EXP 	win: mouseVisible = True
