@@ -1,4 +1,4 @@
 ﻿topPrompts,bottomPrompts,image
-Count the all the faces you see looking directly at you,Press ENTER to continue,
-Here are some examples of faces not looking at you (left) and looking at you (right) ,Press ENTER to continue,Faces/sample_images/sample_social.png
-"If you have any questions, please ask the experimenter now","WHEN YOU ARE READY TO BEGIN, press any button",
+"In this task, you will see images briefly flashed on the screen. Your job is to count the images in a “target” category and ignore the others. At the end, we will ask you how many target images you saw.","In this run, please count all the faces looking directly at you. (Press ENTER to continue.)",
+Here are some examples of faces not looking at you (left) and looking at you (right).,"Just before and after each image, there will be a cross in the middle of the screen. Please look directly at the cross and try not to blink during this period. (Press ENTER to continue.)",Faces/sample_images/sample_social.png
+"If you have any questions, please ask the experimenter now.","WHEN YOU ARE READY TO BEGIN, press any button.",

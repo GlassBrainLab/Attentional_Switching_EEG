@@ -49,7 +49,9 @@ params = {
     'screenToShow': 0,        # display on primary screen (0) or secondary (1)?
     'fixCrossSize': 0.1,       # size of cross, in height units
     'fixCrossPos': [0,0],     # (x,y) pos of fixation cross displayed before each stimulus (for gaze drift correction)
-    'screenColor':(128,128,128) # in rgb255 space: (r,g,b) all between 0 and 255
+    'screenColor':(128,128,128), # in rgb255 space: (r,g,b) all between 0 and 255
+    'promptImageSize': [1.2, 0.3] ,        # set dimesions of prompt image
+    'imageSize': [0.8, 0.8]           # Set dimensions of image size
 }
 
 # Get condition input (neutral, social, threat)
@@ -227,6 +229,7 @@ def RunPrompts(topPrompts,bottomPrompts,middleImages,backKey='backspace',backPro
             message2.setText(bottomPrompts[iPrompt])
             if pd.isna(middleImages[iPrompt]) == False: # if the image name is not NaN change the image
                 stimImage.setImage(middleImages[iPrompt])
+                stimImage.size = params['promptImageSize'] # Change dimesions of image size 
                 stimImage.draw() # draw the image
             #display instructions and wait
             message1.draw()
@@ -262,6 +265,7 @@ def ShowImage(imageName, stimDur=float('Inf')):
          
     # Draw image
     stimImage.setImage(imageName)
+    stimImage.size = params['imageSize']
     stimImage.draw()
     # log & flip window to display image
     win.logOnFlip(level=logging.EXP, msg='Display %s'%imageName)
