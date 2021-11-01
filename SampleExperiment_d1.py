@@ -322,9 +322,17 @@ def CoolDown():
     message2.draw()
     win.flip()
     thisKey = event.waitKeys(keyList=['q','escape'])
+    win.close()
+    
+    # Log number of targets
+    dlg = gui.Dlg() # create GUI
+    dlg.addField('Number of targets counted: ' ) 
+    dlg.show() # Display GUI
+    logging.log(level=logging.EXP, msg=f'number of targets counted: {dlg.data[0]}')
     
     # exit
     core.quit()
+
 
 
 # =========================== #
@@ -393,6 +401,6 @@ for iResp in range(0,len(params['respKeys'])):
     print('Responded %s: %.1f%%'%(params['respKeys'][iResp],np.nanmean(iRespVec==iResp)*100))
     
 print('Did not respond: %.1f%%'%(np.mean(np.isnan(iRespVec))*100))
-
+    
 # exit experiment
 CoolDown()
