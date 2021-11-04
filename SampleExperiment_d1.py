@@ -13,6 +13,7 @@ import time as ts, numpy as np # for timing and array operations
 import BasicPromptTools # for loading/presenting prompts and questions
 import random # for randomization of trials
 import pandas as pd # for reading instruction csv files
+import serial # For sending signals to eeg
 
 # ====================== #
 # ===== PARAMETERS ===== #
@@ -24,7 +25,7 @@ newParamsFilename = 'SampleExperimentParams.psydat'
 # Declare primary task parameters.
 params = {
 # Declare stimulus and response parameters
-    'nTrials': 3, # change to 107 for 8 minute long session,            # number of trials in this session
+    'nTrials': 10, # change to 107 for 8 minute long session,            # number of trials in this session
     'stimDur': .5,             # time when stimulus is presented (in seconds)
     'preStimDur': np.arange(0.5,2,0.1),          # time when pre stimulus fixation cross is presented (in seconds)
     'postStimDur': 1.0,          # time when post stimulus fixation cross is presented (in seconds)
@@ -51,19 +52,16 @@ params = {
     'fixCrossPos': [0,0],     # (x,y) pos of fixation cross displayed before each stimulus (for gaze drift correction)
     'screenColor':(128,128,128), # in rgb255 space: (r,g,b) all between 0 and 255
     'promptImageSize': [1.2, 0.3] ,        # set dimesions of prompt image
-    'imageSize': [0.8, 0.8]           # Set dimensions of image size
+    'imageSize': [0.8, 0.8],          # Set dimensions of image size
+# declare serial mesage parameters
+    'baudeRate': 115200, # baude rate value
+    'preFixMessage': bytearray[155], # message to send when pre fixation cross is displayed
+    'imageMessage': bytearray[155], # message to send when image is displayed
+    'postFixMessage': bytearray[155], # message to send when post fixation cross is displayed
+    'blankMessage': bytearray[155] # message to send when blank screen is displayed
 }
 
-# Get condition input (neutral, social, threat)
-#dlg = gui.Dlg() # create GUI
-#dlg.addField('Condition: ', choices=params['choices']) # Create condition drop down menu- can be 1, 2 or 3
-#dlg.show() # Display GUI
-#if dlg.data[0] == 1:
-#    imageDir = params['imageDir_neutral']
-#elif dlg.data[0] == 2:
-#    imageDir = params['imageDir_social']
-#else:
-#    imageDir = params['imageDir_threat']
+ser = serial.Serial('/dev/cu.usbserial-DN2Q03JQ', params['baudeRate'], timeout=10)
     
 # save parameters
 if saveParams:
@@ -261,14 +259,17 @@ def ShowImage(imageName, stimDur=float('Inf')):
     while (globalClock.getTime()<tNextFlip[0]):
          fixation.draw() # draw it
          win.logOnFlip(level=logging.EXP, msg='Display Fixation')
+        # Send pre-fixation message to EEG
+         win.callOnFlip(ser.write, params['preFixMessage'])
          win.flip()
          
     # Draw image
     stimImage.setImage(imageName)
     stimImage.size = params['imageSize']
     stimImage.draw()
-    # log & flip window to display image
+    # log & flip window to display image, send message
     win.logOnFlip(level=logging.EXP, msg='Display %s'%imageName)
+    win.callOnFlip(ser.write, params['imageMessage'])
     win.flip()
     tStimStart = globalClock.getTime() # record time when window flipped
     # set up next win flip time after this one
@@ -301,12 +302,14 @@ def ShowImage(imageName, stimDur=float('Inf')):
         # Display the fixation cross
         fixation.draw() # draw it
         win.logOnFlip(level=logging.EXP, msg='Display Fixation')
+        win.callOnFlip(ser.write, params['postFixMessage'])
         win.flip()
     
     # Display blank screen
     AddToFlipTime(params['ISI']) # add to tNextFlip[0]
     while (globalClock.getTime()<tNextFlip[0]): # until it's time for the next frame
         win.logOnFlip(level=logging.EXP, msg='Display Fixation')
+        win.callOnFlip(ser.write, params['blankMessage'])
         win.flip()
         
     return (respKey, tStimStart)
