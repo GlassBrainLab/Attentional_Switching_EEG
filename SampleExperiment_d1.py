@@ -25,7 +25,7 @@ newParamsFilename = 'SampleExperimentParams.psydat'
 # Declare primary task parameters.
 params = {
 # Declare stimulus and response parameters
-    'nTrials': 10, # change to 107 for 8 minute long session,            # number of trials in this session
+    'nTrials': 5, # change to 107 for 8 minute long session,            # number of trials in this session
     'stimDur': .5,             # time when stimulus is presented (in seconds)
     'preStimDur': np.arange(0.5,2,0.1),          # time when pre stimulus fixation cross is presented (in seconds)
     'postStimDur': 1.0,          # time when post stimulus fixation cross is presented (in seconds)
@@ -54,14 +54,18 @@ params = {
     'promptImageSize': [1.2, 0.3] ,        # set dimesions of prompt image
     'imageSize': [0.8, 0.8],          # Set dimensions of image size
 # declare serial mesage parameters
+    'deviceName': '/dev/cu.usbserial-DN2Q03JQ', # Name of callout device
     'baudeRate': 115200, # baude rate value
-    'preFixMessage': bytearray[155], # message to send when pre fixation cross is displayed
-    'imageMessage': bytearray[155], # message to send when image is displayed
-    'postFixMessage': bytearray[155], # message to send when post fixation cross is displayed
-    'blankMessage': bytearray[155] # message to send when blank screen is displayed
+    'imageSubstring': 'nontarget', # substring to search for in image name
+    'preFixMessage': bytearray([1]), # message to send when pre fixation cross is displayed
+    'postFixMessage': bytearray([10]), # message to send when post fixation cross is displayed
+    'blankMessage': bytearray([20]), # message to send when blank screen is displayed
+    'targetMessage': bytearray([30]), # message to send when target image is displayed
+    'nontargetMessage': bytearray([40]), # message to send when nontarget image is displayed
 }
 
-ser = serial.Serial('/dev/cu.usbserial-DN2Q03JQ', params['baudeRate'], timeout=10)
+# Initialize callout device for sending messages
+ser = serial.Serial(params['deviceName'], params['baudeRate'], timeout=10)
     
 # save parameters
 if saveParams:
@@ -255,12 +259,12 @@ def ShowImage(imageName, stimDur=float('Inf')):
     # Display fixation cross for preStimDur time
     random.seed()
     AddToFlipTime(random.choice(params['preStimDur'])) # add to tNextFlip[0]
+    win.callOnFlip(ser.write, params['preFixMessage'])
     # Wait until it's time to display
     while (globalClock.getTime()<tNextFlip[0]):
          fixation.draw() # draw it
          win.logOnFlip(level=logging.EXP, msg='Display Fixation')
         # Send pre-fixation message to EEG
-         win.callOnFlip(ser.write, params['preFixMessage'])
          win.flip()
          
     # Draw image
@@ -269,7 +273,11 @@ def ShowImage(imageName, stimDur=float('Inf')):
     stimImage.draw()
     # log & flip window to display image, send message
     win.logOnFlip(level=logging.EXP, msg='Display %s'%imageName)
-    win.callOnFlip(ser.write, params['imageMessage'])
+    # if 'nontarget' is in image name, send nontarget message
+    if 'Woman' in imageName:
+        win.callOnFlip(ser.write, params['targetMessage'])
+    else:
+        win.callOnFlip(ser.write, params['nontargetMessage'])
     win.flip()
     tStimStart = globalClock.getTime() # record time when window flipped
     # set up next win flip time after this one
@@ -298,18 +306,18 @@ def ShowImage(imageName, stimDur=float('Inf')):
     
     # Dispay post stimulus fixation cross
     AddToFlipTime(params['postStimDur']) # add to tNextFlip[0]
+    win.callOnFlip(ser.write, params['postFixMessage']) # send post fixation cross signal
     while (globalClock.getTime()<tNextFlip[0]): # until it's time for the next frame
         # Display the fixation cross
         fixation.draw() # draw it
         win.logOnFlip(level=logging.EXP, msg='Display Fixation')
-        win.callOnFlip(ser.write, params['postFixMessage'])
         win.flip()
     
     # Display blank screen
     AddToFlipTime(params['ISI']) # add to tNextFlip[0]
+    win.callOnFlip(ser.write, params['blankMessage']) # send blank screen message signal
     while (globalClock.getTime()<tNextFlip[0]): # until it's time for the next frame
         win.logOnFlip(level=logging.EXP, msg='Display Fixation')
-        win.callOnFlip(ser.write, params['blankMessage'])
         win.flip()
         
     return (respKey, tStimStart)
