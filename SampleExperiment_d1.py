@@ -274,7 +274,7 @@ def ShowImage(imageName, stimDur=float('Inf')):
     # log & flip window to display image, send message
     win.logOnFlip(level=logging.EXP, msg='Display %s'%imageName)
     # if 'nontarget' is in image name, send nontarget message
-    if 'Woman' in imageName:
+    if ('hat' | 'side' | 'angry') in imageName:
         win.callOnFlip(ser.write, params['targetMessage'])
     else:
         win.callOnFlip(ser.write, params['nontargetMessage'])
