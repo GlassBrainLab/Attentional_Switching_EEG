@@ -25,13 +25,14 @@ newParamsFilename = 'AttentionalSwitchingParams.psydat'
 # Declare primary task parameters.
 params = {
 # Declare stimulus and response parameters
-    'nTrials': 5, # change to 107 for 8 minute long session,            # number of trials in this session
+    'nTrials': 34, # change to 107 for 8 minute long session,            # number of trials in this session
     'stimDur': .5,             # time when stimulus is presented (in seconds)
     'preStimDur': np.arange(0.5,2,0.1),          # time when pre stimulus fixation cross is presented (in seconds)
     'postStimDur': 1.0,          # time when post stimulus fixation cross is presented (in seconds)
     'ISI': 1.75,                 # time between when one cross disappears and the next appears (in seconds)
     'tStartup': 1,            # pause time before starting first stimulus
-    'triggerKey': 't',        # key from scanner that says scan is starting
+    'pTarget':0.2, # probability of each trial being a target
+    'triggerKey': 't',        # key from scanner that says scan is starting                                                                                                                         
     'respKeys': ['r','b','y','g'],           # keys to be used for responses (mapped to 1,2,3,4)
     'respAdvances': True,     # will a response end the stimulus?
     'choices': [1, 2, 3],      # Drop down menu options to specify condition, which determines which folder to pull images from
@@ -190,16 +191,19 @@ message1 = visual.TextStim(win, pos=[0,+.5], wrapWidth=1.5, color='#000000', ali
 message2 = visual.TextStim(win, pos=[0,-.5], wrapWidth=1.5, color='#000000', alignHoriz='center', name='bottomMsg', text="bbb",units='norm')
 
 # get stimulus files
-allImages = glob.glob(imageDir+"*"+params['imageSuffix']) # get all files in <imageDir> that end in .<imageSuffix>.
-print('%d images loaded from %s'%(len(allImages),imageDir))
+targetImages = glob.glob(imageDir+"*_target"+params['imageSuffix']) # get all files in <imageDir> that end in .<imageSuffix>.
+nontargetImages = glob.glob(imageDir+"*_nontarget"+params['imageSuffix']) # get all files in <imageDir> that end in .<imageSuffix>.
+print('%d target images loaded from %s'%(len(targetImages),imageDir))
+print('%d nontarget images loaded from %s'%(len(nontargetImages),imageDir))
 # make sure there are enough images
-if len(allImages)<params['nTrials']:
-    raise ValueError("# images found in '%s' (%d) is less than # trials (%d)!"%(imageDir,len(allImages),params['nTrials']))
+image_count = len(targetImages) + len(nontargetImages)
+if image_count<params['nTrials']:
+    raise ValueError("# images found in '%s' (%d) is less than # trials (%d)!"%(imageDir,image_count,params['nTrials']))
 # randomize order
-random.shuffle(allImages)
+# random.shuffle(allImages)
 
 # initialize main image stimulus
-imageName = allImages[0] # initialize with first image
+imageName = targetImages[0] # initialize with first image
 stimImage = visual.ImageStim(win, pos=[0,0], name='ImageStimulus',image=imageName, units='height')
 
 # read questions and answers from text files
@@ -385,8 +389,13 @@ rtVec = np.zeros(params['nTrials'])
 rtVec[:]=np.nan
 # display images
 for iStim in range(0,params['nTrials']):
-    # display text
-    [respKey,tStimStart] = ShowImage(imageName=allImages[iStim],stimDur=params['stimDur'])
+    # select image
+    if random.random()<params['pTarget']:
+        thisImage = random.choice(targetImages)
+    else:
+        thisImage = random.choice(nontargetImages)
+    # display image
+    [respKey,tStimStart] = ShowImage(imageName=thisImage,stimDur=params['stimDur'])
     # save stimulus time
     tStimVec[iStim] = tStimStart
     if respKey is not None and respKey[0] in params['respKeys']:
