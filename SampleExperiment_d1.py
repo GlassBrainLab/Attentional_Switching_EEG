@@ -274,10 +274,10 @@ def ShowImage(imageName, stimDur=float('Inf')):
     # log & flip window to display image, send message
     win.logOnFlip(level=logging.EXP, msg='Display %s'%imageName)
     # if 'nontarget' is in image name, send nontarget message
-    if ('hat') in imageName:
-        win.callOnFlip(ser.write, params['targetMessage'])
-    else:
+    if ('nontarget') in imageName:
         win.callOnFlip(ser.write, params['nontargetMessage'])
+    else:
+        win.callOnFlip(ser.write, params['targetMessage'])
     win.flip()
     tStimStart = globalClock.getTime() # record time when window flipped
     # set up next win flip time after this one
@@ -304,7 +304,7 @@ def ShowImage(imageName, stimDur=float('Inf')):
     tStim = globalClock.getTime()-tStimStart
     print('Stim %s: %.3f seconds'%(imageName,tStim))
 
-    # Dispay post stimulus fixation cross
+    # Display post stimulus fixation cross
     AddToFlipTime(params['postStimDur']) # add to tNextFlip[0]
     win.callOnFlip(ser.write, params['postFixMessage']) # send post fixation cross signal
     while (globalClock.getTime()<tNextFlip[0]): # until it's time for the next frame
