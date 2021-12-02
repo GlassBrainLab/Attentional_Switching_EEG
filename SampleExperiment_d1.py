@@ -140,7 +140,7 @@ toFile('%s-lastExpInfo.psydat'%scriptName, expInfo)#save params to file for next
 
 #make a log file to save parameter/event  data
 dateStr = ts.strftime("%b_%d_%H%M", ts.localtime()) # add the current time
-filename = '%s/%s-%s-%d-%s'%(params[dataFolder],scriptName,expInfo['subject'], expInfo['session'], dateStr) # log filename
+filename = '%s/%s-%s-%d-%s'%(params['dataFolder'],scriptName,expInfo['subject'], expInfo['session'], dateStr) # log filename
 logging.LogFile((filename+'.log'), level=logging.INFO)#, mode='w') # w=overwrite
 logging.log(level=logging.INFO, msg='---START PARAMETERS---')
 logging.log(level=logging.INFO, msg='filename: %s'%filename)

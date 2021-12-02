@@ -39,6 +39,7 @@ params = {
     'imageDir_social': 'Faces/social/',      # directory containing social image stimluli
     'imageDir_threat': 'Faces/threat/',      # directory containing threat image stimluli
     'imageSuffix': '.png',   # images will be selected randomly (without replacement) from all files in imageDir that end in imageSuffix.
+    'dataFolder': 'data/', #directory to store data
 # declare prompt and question files
     'skipPrompts': False,     # go right to the scanner-wait page
     'promptDir': 'Text/',  # directory containing prompts and questions files
@@ -138,7 +139,7 @@ toFile('%s-lastExpInfo.psydat'%scriptName, expInfo)#save params to file for next
 
 #make a log file to save parameter/event  data
 dateStr = ts.strftime("%b_%d_%H%M", ts.localtime()) # add the current time
-filename = '%s-%s-%d-%s'%(scriptName,expInfo['subject'], expInfo['session'], dateStr) # log filename
+filename = '%s%s-%s-%d-%s'%(params['dataFolder'],scriptName,expInfo['subject'], expInfo['session'], dateStr) # log filename
 logging.LogFile((filename+'.log'), level=logging.INFO)#, mode='w') # w=overwrite
 logging.log(level=logging.INFO, msg='---START PARAMETERS---')
 logging.log(level=logging.INFO, msg='filename: %s'%filename)
@@ -260,10 +261,10 @@ def ShowImage(imageName, stimDur=float('Inf')):
     random.seed()
     AddToFlipTime(random.choice(params['preStimDur'])) # add to tNextFlip[0]
     win.callOnFlip(ser.write, params['preFixMessage'])
+    win.logOnFlip(level=logging.EXP, msg='Display pre Fixation')
     # Wait until it's time to display
     while (globalClock.getTime()<tNextFlip[0]):
          fixation.draw() # draw it
-         win.logOnFlip(level=logging.EXP, msg='Display Fixation')
         # Send pre-fixation message to EEG
          win.flip()
 
@@ -307,17 +308,17 @@ def ShowImage(imageName, stimDur=float('Inf')):
     # Dispay post stimulus fixation cross
     AddToFlipTime(params['postStimDur']) # add to tNextFlip[0]
     win.callOnFlip(ser.write, params['postFixMessage']) # send post fixation cross signal
+    win.logOnFlip(level=logging.EXP, msg='Display post Fixation')
     while (globalClock.getTime()<tNextFlip[0]): # until it's time for the next frame
         # Display the fixation cross
         fixation.draw() # draw it
-        win.logOnFlip(level=logging.EXP, msg='Display Fixation')
         win.flip()
 
     # Display blank screen
     AddToFlipTime(params['ISI']) # add to tNextFlip[0]
     win.callOnFlip(ser.write, params['blankMessage']) # send blank screen message signal
+    win.logOnFlip(level=logging.EXP, msg='Blank screen')
     while (globalClock.getTime()<tNextFlip[0]): # until it's time for the next frame
-        win.logOnFlip(level=logging.EXP, msg='Display Fixation')
         win.flip()
 
     return (respKey, tStimStart)
