@@ -31,7 +31,8 @@ params = {
     'postStimDur': 1.0,          # time when post stimulus fixation cross is presented (in seconds)
     'ISI': 1.75,                 # time between when one cross disappears and the next appears (in seconds)
     'tStartup': 1,            # pause time before starting first stimulus
-    'triggerKey': 't',        # key from scanner that says scan is starting
+    'pTarget':0.2, # probability of each trial being a target
+    'triggerKey': 't',        # key from scanner that says scan is starting                                                                                                                         
     'respKeys': ['r','b','y','g'],           # keys to be used for responses (mapped to 1,2,3,4)
     'respAdvances': True,     # will a response end the stimulus?
     'choices': [1, 2, 3],      # Drop down menu options to specify condition, which determines which folder to pull images from
@@ -39,7 +40,7 @@ params = {
     'imageDir_social': 'Faces/social/',      # directory containing social image stimluli
     'imageDir_threat': 'Faces/threat/',      # directory containing threat image stimluli
     'imageSuffix': '.png',   # images will be selected randomly (without replacement) from all files in imageDir that end in imageSuffix.
-    'dataFolder': 'data/', #directory to store data
+    'dataFolder': 'data', # folder to send logs to
 # declare prompt and question files
     'skipPrompts': False,     # go right to the scanner-wait page
     'promptDir': 'Text/',  # directory containing prompts and questions files
@@ -139,7 +140,7 @@ toFile('%s-lastExpInfo.psydat'%scriptName, expInfo)#save params to file for next
 
 #make a log file to save parameter/event  data
 dateStr = ts.strftime("%b_%d_%H%M", ts.localtime()) # add the current time
-filename = '%s%s-%s-%d-%s'%(params['dataFolder'],scriptName,expInfo['subject'], expInfo['session'], dateStr) # log filename
+filename = '%s/%s-%s-%d-%s'%(params['dataFolder'],scriptName,expInfo['subject'], expInfo['session'], dateStr) # log filename
 logging.LogFile((filename+'.log'), level=logging.INFO)#, mode='w') # w=overwrite
 logging.log(level=logging.INFO, msg='---START PARAMETERS---')
 logging.log(level=logging.INFO, msg='filename: %s'%filename)
@@ -191,16 +192,19 @@ message1 = visual.TextStim(win, pos=[0,+.5], wrapWidth=1.5, color='#000000', ali
 message2 = visual.TextStim(win, pos=[0,-.5], wrapWidth=1.5, color='#000000', alignHoriz='center', name='bottomMsg', text="bbb",units='norm')
 
 # get stimulus files
-allImages = glob.glob(imageDir+"*"+params['imageSuffix']) # get all files in <imageDir> that end in .<imageSuffix>.
-print('%d images loaded from %s'%(len(allImages),imageDir))
+targetImages = glob.glob(imageDir+"*_target"+params['imageSuffix']) # get all files in <imageDir> that end in .<imageSuffix>.
+nontargetImages = glob.glob(imageDir+"*_nontarget"+params['imageSuffix']) # get all files in <imageDir> that end in .<imageSuffix>.
+print('%d target images loaded from %s'%(len(targetImages),imageDir))
+print('%d nontarget images loaded from %s'%(len(nontargetImages),imageDir))
 # make sure there are enough images
-if len(allImages)<params['nTrials']:
-    raise ValueError("# images found in '%s' (%d) is less than # trials (%d)!"%(imageDir,len(allImages),params['nTrials']))
+image_count = len(targetImages) + len(nontargetImages)
+if image_count<params['nTrials']:
+    raise ValueError("# images found in '%s' (%d) is less than # trials (%d)!"%(imageDir,image_count,params['nTrials']))
 # randomize order
-random.shuffle(allImages)
+# random.shuffle(allImages)
 
 # initialize main image stimulus
-imageName = allImages[0] # initialize with first image
+imageName = targetImages[0] # initialize with first image
 stimImage = visual.ImageStim(win, pos=[0,0], name='ImageStimulus',image=imageName, units='height')
 
 # read questions and answers from text files
@@ -261,7 +265,7 @@ def ShowImage(imageName, stimDur=float('Inf')):
     random.seed()
     AddToFlipTime(random.choice(params['preStimDur'])) # add to tNextFlip[0]
     win.callOnFlip(ser.write, params['preFixMessage'])
-    win.logOnFlip(level=logging.EXP, msg='Display pre Fixation')
+    win.logOnFlip(level=logging.EXP, msg='Display pre Fixation') # Only log display fixation once
     # Wait until it's time to display
     while (globalClock.getTime()<tNextFlip[0]):
          fixation.draw() # draw it
@@ -275,10 +279,10 @@ def ShowImage(imageName, stimDur=float('Inf')):
     # log & flip window to display image, send message
     win.logOnFlip(level=logging.EXP, msg='Display %s'%imageName)
     # if 'nontarget' is in image name, send nontarget message
-    if ('hat') in imageName:
-        win.callOnFlip(ser.write, params['targetMessage'])
-    else:
+    if ('nontarget') in imageName:
         win.callOnFlip(ser.write, params['nontargetMessage'])
+    else:
+        win.callOnFlip(ser.write, params['targetMessage'])
     win.flip()
     tStimStart = globalClock.getTime() # record time when window flipped
     # set up next win flip time after this one
@@ -305,10 +309,10 @@ def ShowImage(imageName, stimDur=float('Inf')):
     tStim = globalClock.getTime()-tStimStart
     print('Stim %s: %.3f seconds'%(imageName,tStim))
 
-    # Dispay post stimulus fixation cross
+    # Display post stimulus fixation cross
     AddToFlipTime(params['postStimDur']) # add to tNextFlip[0]
     win.callOnFlip(ser.write, params['postFixMessage']) # send post fixation cross signal
-    win.logOnFlip(level=logging.EXP, msg='Display post Fixation')
+    win.logOnFlip(level=logging.EXP, msg='Display post Fixation') # Only log display fixation once
     while (globalClock.getTime()<tNextFlip[0]): # until it's time for the next frame
         # Display the fixation cross
         fixation.draw() # draw it
@@ -317,7 +321,7 @@ def ShowImage(imageName, stimDur=float('Inf')):
     # Display blank screen
     AddToFlipTime(params['ISI']) # add to tNextFlip[0]
     win.callOnFlip(ser.write, params['blankMessage']) # send blank screen message signal
-    win.logOnFlip(level=logging.EXP, msg='Blank screen')
+    win.logOnFlip(level=logging.EXP, msg='Blank screen') # Only log blank screen once
     while (globalClock.getTime()<tNextFlip[0]): # until it's time for the next frame
         win.flip()
 
@@ -386,8 +390,13 @@ rtVec = np.zeros(params['nTrials'])
 rtVec[:]=np.nan
 # display images
 for iStim in range(0,params['nTrials']):
-    # display text
-    [respKey,tStimStart] = ShowImage(imageName=allImages[iStim],stimDur=params['stimDur'])
+    # select image
+    if random.random()<params['pTarget']:
+        thisImage = random.choice(targetImages)
+    else:
+        thisImage = random.choice(nontargetImages)
+    # display image
+    [respKey,tStimStart] = ShowImage(imageName=thisImage,stimDur=params['stimDur'])
     # save stimulus time
     tStimVec[iStim] = tStimStart
     if respKey is not None and respKey[0] in params['respKeys']:
