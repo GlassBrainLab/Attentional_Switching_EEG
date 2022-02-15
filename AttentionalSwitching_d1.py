@@ -147,6 +147,7 @@ logging.log(level=logging.INFO, msg='filename: %s'%filename)
 logging.log(level=logging.INFO, msg='subject: %s'%expInfo['subject'])
 logging.log(level=logging.INFO, msg='session: %s'%expInfo['session'])
 logging.log(level=logging.INFO, msg='date: %s'%dateStr)
+logging.log(level=logging.INFO, msg='condition: %s'%expInfo['condition'] )
 # log everything in the params struct
 for key in sorted(params.keys()): # in alphabetical order
     logging.log(level=logging.INFO, msg='%s: %s'%(key,params[key])) # log each parameter
