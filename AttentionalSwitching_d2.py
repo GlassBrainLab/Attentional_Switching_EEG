@@ -29,7 +29,7 @@ params = {
     'stimDur': .5,             # time when stimulus is presented (in seconds)
     'preStimDur': np.arange(0.5,2,0.1),          # time when pre stimulus fixation cross is presented (in seconds)
     'postStimDur': 1.0,          # time when post stimulus fixation cross is presented (in seconds)
-    'ISI': 1.75,                 # time between when one cross disappears and the next appears (in seconds)
+    'ISI': 2.75,                 # time between when one cross disappears and the next appears (in seconds)
     'tStartup': 1,            # pause time before starting first stimulus
     'pTarget':0.2, # probability of each trial being a target
     'triggerKey': 't',        # key from scanner that says scan is starting                                                                                                                         
@@ -310,14 +310,14 @@ def ShowImage(imageName, stimDur=float('Inf')):
     tStim = globalClock.getTime()-tStimStart
     print('Stim %s: %.3f seconds'%(imageName,tStim))
 
-    # Display post stimulus fixation cross
-    AddToFlipTime(params['postStimDur']) # add to tNextFlip[0]
-    win.callOnFlip(ser.write, params['postFixMessage']) # send post fixation cross signal
-    win.logOnFlip(level=logging.EXP, msg='Display post Fixation') # Only log display fixation once
-    while (globalClock.getTime()<tNextFlip[0]): # until it's time for the next frame
-        # Display the fixation cross
-        fixation.draw() # draw it
-        win.flip()
+#    # Display post stimulus fixation cross
+#    AddToFlipTime(params['postStimDur']) # add to tNextFlip[0]
+#    win.callOnFlip(ser.write, params['postFixMessage']) # send post fixation cross signal
+#    win.logOnFlip(level=logging.EXP, msg='Display post Fixation') # Only log display fixation once
+#    while (globalClock.getTime()<tNextFlip[0]): # until it's time for the next frame
+#        # Display the fixation cross
+#        fixation.draw() # draw it
+#        win.flip()
 
     # Display blank screen
     AddToFlipTime(params['ISI']) # add to tNextFlip[0]
@@ -390,9 +390,12 @@ iRespVec[:]=np.nan
 rtVec = np.zeros(params['nTrials'])
 rtVec[:]=np.nan
 # display images
+perTarget= int(params['nTrials']*params['pTarget'])
+numTarget = random.randint(perTarget-3,perTarget+3)
+targetInd= random.sample(range(0,params['nTrials']), numTarget)
 for iStim in range(0,params['nTrials']):
     # select image
-    if random.random()<params['pTarget']:
+    if iStim in targetInd:
         thisImage = random.choice(targetImages)
     else:
         thisImage = random.choice(nontargetImages)
