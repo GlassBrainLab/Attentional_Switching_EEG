@@ -1,8 +1,8 @@
 ﻿#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-This experiment was created using PsychoPy3 Experiment Builder (v2021.1.4),
-    on Tue Apr 11 14:59:10 2023
+This experiment was created using PsychoPy3 Experiment Builder (v2021.2.3),
+    on Thu Oct 19 16:37:56 2023
 If you publish work using this script the most relevant publication is:
 
     Peirce J, Gray JR, Simpson S, MacAskill M, Höchenberger R, Sogo H, Kastman E, Lindeløv JK. (2019) 
@@ -35,7 +35,7 @@ _thisDir = os.path.dirname(os.path.abspath(__file__))
 os.chdir(_thisDir)
 
 # Store info about the experiment session
-psychopyVersion = '2021.1.4'
+psychopyVersion = '2021.2.3'
 expName = 'SurveyTask'  # from the Builder filename that created this script
 expInfo = {'participant': '', 'session': '001'}
 dlg = gui.DlgFromDict(dictionary=expInfo, sortKeys=False, title=expName)
@@ -51,7 +51,7 @@ filename = _thisDir + os.sep + u'data/%s-%s_%s_%s' % (expInfo['participant'], ex
 # An ExperimentHandler isn't essential but helps with data saving
 thisExp = data.ExperimentHandler(name=expName, version='',
     extraInfo=expInfo, runtimeInfo=None,
-    originPath='/Users/brainlab/Documents/GitHub/Attentional_Switching_EEG/SurveyTask/SurveyTask_lastrun.py',
+    originPath='/Users/hsun11/Documents/GlassBrainLab/AttentionalSwitching/Task/2DTask/Attentional_Switching_EEG/AnxietySurveyTask/SurveyTask_lastrun.py',
     savePickle=True, saveWideText=True,
     dataFileName=filename)
 # save a log file for detail verbose info
@@ -77,6 +77,9 @@ if expInfo['frameRate'] != None:
 else:
     frameDur = 1.0 / 60.0  # could not measure, so guess
 
+# Setup eyetracking
+ioDevice = ioConfig = ioSession = ioServer = eyetracker = None
+
 # create a default keyboard (e.g. to check for escape)
 defaultKeyboard = keyboard.Keyboard()
 
@@ -84,25 +87,30 @@ defaultKeyboard = keyboard.Keyboard()
 trialClock = core.Clock()
 win.allowStencil = True
 form = visual.Form(win=win, name='form',
-    items='/Users/brainlab/Documents/GitHub/Attentional_Switching_EEG/SurveyTask/SCAARED_form.xlsx',
+    items='SCAARED_form.xlsx',
     textHeight=0.03,
+    font='Open Sans',
     randomize=False,
+    style='dark',
+    fillColor=None, borderColor=None, itemColor='white', 
+    responseColor='white', markerColor='red', colorSpace='rgb', 
     size=(1.5, 0.85),
     pos=(0, 0.05),
-    style='dark',
-    itemPadding=0.05,)
+    itemPadding=0.05
+)
 done_button = visual.ButtonStim(win, 
-   text='Click here when done', font='Helvetica',
-   pos=(0.5, -0.45),
-   letterHeight=0.03,
-   size=(0.5, 0.09), borderWidth=0.0,
-   fillColor='darkgrey', borderColor=None,
-   color='white', colorSpace='rgb',
-   opacity=None,
-   bold=True, italic=False,
-   padding=None,
-   anchor='center',
-   name='done_button')
+    text='Click here when done', font='Helvetica',
+    pos=(0.5, -0.45),
+    letterHeight=0.03,
+    size=(0.5, 0.09), borderWidth=0.0,
+    fillColor='darkgrey', borderColor=None,
+    color='white', colorSpace='rgb',
+    opacity=None,
+    bold=True, italic=False,
+    padding=None,
+    anchor='center',
+    name='done_button'
+)
 done_button.buttonClock = core.Clock()
 footer = visual.TextStim(win=win, name='footer',
     text='Please answer every question.',
@@ -182,7 +190,6 @@ while continueRoutine:
         else:
             done_button.wasClicked = False  # if done_button is clicked next frame, it is a new click
     else:
-        done_button.buttonClock.reset() # keep clock at 0 if button hasn't started / has finished
         done_button.wasClicked = False  # if done_button is clicked next frame, it is a new click
     
     # *footer* updates

@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" ?>
-<PsychoPy2experiment encoding="utf-8" version="2021.1.4">
+<PsychoPy2experiment encoding="utf-8" version="2021.2.3">
   <Settings>
     <Param name="Audio latency priority" updates="None" val="use prefs" valType="str"/>
     <Param name="Audio lib" updates="None" val="use prefs" valType="str"/>
@@ -59,7 +59,7 @@
         <Param name="Data Format" updates="constant" val="rows" valType="str"/>
         <Param name="Font" updates="constant" val="Open Sans" valType="str"/>
         <Param name="Item Padding" updates="constant" val="0.05" valType="num"/>
-        <Param name="Items" updates="constant" val="/Users/brainlab/Documents/GitHub/Attentional_Switching_EEG/SurveyTask/SCAARED_form.xlsx" valType="file"/>
+        <Param name="Items" updates="constant" val="SCAARED_form.xlsx" valType="file"/>
         <Param name="Randomize" updates="constant" val="False" valType="bool"/>
         <Param name="Style" updates="constant" val="dark" valType="str"/>
         <Param name="Text Height" updates="constant" val="0.03" valType="num"/>
